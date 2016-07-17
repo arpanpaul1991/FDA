@@ -1,0 +1,31 @@
+﻿    li
+    {
+        float:left;
+       
+    }
+    ul 
+    {
+        list-style-type:none;
+    }
+    .header
+    {
+
+    }
+    .footer
+    {
+
+    }
+     li a
+    {
+        
+        margin-left:5px;
+        margin-right:5px;
+    }
+     .header ul
+     {
+         margin-left:180px;
+     }
+     .footer ul
+     {
+         margin-left:180px;
+     }

@@ -1,0 +1,262 @@
+﻿<style>
+    .sortorder:after {
+        content: '\25b2';
+        // BLACK UP-POINTING TRIANGLE;
+    }
+
+    .sortorder.reverse:after {
+        content: '\25bc';
+        // BLACK DOWN-POINTING TRIANGLE;
+    }
+
+    .sort-icon {
+        font-size: 9px;
+        margin-left: 5px;
+    }
+
+    th {
+        cursor: pointer;
+    }
+</style>
+<script src="~/Scripts/dirPagination.js"></script>
+<div>
+    <div ng-controller="MenuListController" ng-init="firstCall()">
+
+        <h2>Orders</h2>
+
+
+        <form>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><i>Search</i></div>
+                    <input type="text" class="form-control" placeholder="Search Order" ng-model="searchOrder">
+                </div>
+            </div>
+        </form>
+       
+            <table class="table table-striped table-hover" @*class="table table-striped table-hover table-bordered"*@>
+                <thead>
+                    <tr>
+                        <th>
+
+                            <button class="btn btn-info" ng-click="sortBy('Id')">Id</button>
+                            <span class="sortorder" ng-show="propertyName === 'Id'" ng-class="{reverse: reverse}"></span>
+
+                        </th>
+                        <th>Coupon Id</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Comment</th>
+                        <th>Status</th>
+                        <th>
+                            <button class="btn btn-info" ng-click="sortBy('DateTime')">DateTime</button>
+                            <span class="sortorder" ng-show="propertyName === 'DateTime'" ng-class="{reverse: reverse}"></span>
+                        </th>
+                        <th>Show Details</th>
+                        <th>Edit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr dir-paginate="order in orders | orderBy:propertyName:reverse | filter:searchOrder | itemsPerPage:5">
+                        <td>{{ order.Id }}</td>
+                        <td>{{ order.CouponId }}</td>
+                        <td>{{ order.PhoneNumber }}</td>
+                        <td>{{ order.Address }}</td>
+
+                        <td>
+                            <div ng-hide="editingData[order.Id]">{{ order.Comment}}</div>
+                            <div ng-show="editingData[order.Id]"><input type="text" ng-model="order.Comment" /></div>
+                        </td>
+
+
+                        <td>
+
+                            <div ng-hide="editingData[order.Id]">
+
+                                <div ng-switch="{{order.Status}}">
+                                    <div ng-switch-when="2">
+                                        <strong></strong><i>ConfirmedOrder</i>
+                                    </div>
+                                    <div ng-switch-when="3">
+                                        <strong></strong><i>InProgress</i>
+                                    </div>
+                                    <div ng-switch-when="4">
+                                        <strong></strong><i>ReadyForDelivery</i>
+                                    </div>
+                                    <div ng-switch-when="5">
+                                        <strong></strong><i>DeliveryInProgress</i>
+                                    </div>
+                                    <div ng-switch-when="6" style="color: red">
+                                        <strong></strong><i>Cancel</i>
+                                    </div>
+                                    <div ng-switch-when="9">
+                                        <strong></strong><i>Devilered</i>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <select ng-show="editingData[order.Id]" ng-model="dval" class="dropdown form-control" required>
+
+
+                                <option value="0">Select One</option>
+
+                                <option value="2">ConfirmedOrder</option>
+                                <option value="3">InProgress</option>
+                                <option value="4">ReadyForDelivery</option>
+                                <option value="5">DeliveryInProgress</option>
+                                <option value="6">Cancel</option>
+                                <option value="9">Devilered</option>
+                            </select>
+
+                        </td>
+                        <td>{{order.DateTime}}</td>
+                        <td>
+
+                            <!-- Trigger the modal with a button -->
+                            <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal{{order.Id }}">Details</button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="myModal{{order.Id }}" role="dialog">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Order Details</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table">
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Food Name</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                </tr>
+                                                <tr ng-repeat="orderdetail in order.OrderDetail">
+                                                    <td>{{ orderdetail.MenuId }}</td>
+                                                    <td>{{ orderdetail.FoodName }}</td>
+                                                    <td>{{ orderdetail.Price | currency:"&#8377;" }}</td>
+                                                    <td>{{ orderdetail.TotalQuantity }}</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Ok</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </td>
+                        <td>
+
+                            <button ng-hide="editingData[order.Id]" class="btn btn-primary btn-xs" ng-click="modify(order)">Modify</button>
+                            <button ng-show="editingData[order.Id]" class="btn btn-success btn-xs" ng-click="update(order, dval)">Update</button>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        <dir-pagination-controls max-size="5"
+                                 direction-links="true"
+                                 boundary-links="true">
+        </dir-pagination-controls>
+        
+</div>
+</div>
+
+<script>
+
+    //angular.module('myApp', ['angularUtils.directives.dirPagination']);
+
+    myApp.controller('MenuListController', function MenuListController($scope, $http, $location, $window) {
+
+    var EID = localStorage.getItem('ESID');
+
+    if (EID == "null") {
+        $window.location = '/Home'
+    }
+
+    $scope.firstCall = function () {
+       
+        $http({
+            url: "http://localhost:89/api/EstablishmentOrderList",
+            method: "POST",
+            dataType: JSON,
+            data: $.param({ "EID": EID }),
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        }).success(function (response) {
+            console.log(response);
+            debugger;
+            $scope.orders = response.Body.EstablishOrders;
+
+        });
+    }
+
+
+    $scope.editingData = {};
+
+    $scope.modify = function (order) {
+        $scope.editingData[order.Id] = true;
+        $(".form-control option[value='? undefined:undefined ?']").remove();
+
+    };
+
+    $scope.update = function (order, dval) {
+
+        debugger;
+        if (dval == 0 || dval == "undefined" || dval == null) {
+            alert("Please Select Status");
+            $scope.modify();
+        } else {
+            $http({
+                url: "http://localhost:89/api/UpdateOrder",
+                method: "POST",
+                dataType: JSON,
+                data: $.param({ "OrderId": order.Id, "status": dval, "Comment": order.Comment }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).success(function (response) {
+                console.log(response);
+                $scope.editingData[order.Id] = false;
+                if (response.Status == 200) {
+
+                    alert("Updated Successfully");
+                    $scope.firstCall();
+
+                } else {
+
+                    alert("Something Went Wrong");
+
+                }
+
+            });
+        }
+
+    };
+
+    $scope.sortBy = function (propertyName) {
+        $scope.reverse = ($scope.propertyName === propertyName) ? !$scope.reverse : false;
+        $scope.propertyName = propertyName;
+    };
+
+});
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

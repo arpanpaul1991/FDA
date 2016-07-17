@@ -1,0 +1,371 @@
+﻿@{
+    ViewBag.Title = "Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Menu</h2>
+
+
+<div class="row" ng-controller="MenuListController" ng-init="firstCall()">
+    <div class="col-lg-9">
+        <div>
+
+
+            <div ng-repeat="category in categories">
+                
+
+                <table class="table table-filter">
+                    <caption><h2><i>{{ category.CategoryType }} </i></h2></caption>
+                    <tr class="jumbotron">
+                        <th>Food Name</th>
+                        <th>Price</th>
+                        <th>Quantity/Plate</th>
+                    </tr>
+                    <tr ng-repeat="menu in category.menuList | filter:{ Status: 1 }">
+                        <td>{{ menu.FoodName }}</td>
+                        <td>{{ menu.Price | currency:"&#8377;" }}</td>
+                        <td>{{ menu.Quantity }}</td>
+                        <td>
+
+                            <!-- Trigger the modal with a button -->
+                            <button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#myModal{{menu.MenuId}}">+</button>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="myModal{{menu.MenuId}}" role="dialog">
+                                <div class="modal-dialog modal-sm">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">Add to Cart</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Food Name: {{ menu.FoodName }}</p>
+                                            <p>Price: {{ menu.Price | currency:"&#8377;" }}</p>
+                                            <p>Quantity: <input type="number" ng-keypress="filterValue($event)" ng-model="menu.TotalQuantity" value="1" /></p>
+                                            <p>{{menu.TotalQuantity}} x {{ menu.FoodName }} : {{menu.TotalQuantity*menu.Price}}</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" ng-click="AddOrder(menu)" data-dismiss="modal">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+        <br />
+        <br />
+        <strong>
+            @Html.ActionLink("Go Back", "Restaurants")
+        </strong>
+    </div>
+    <div class="col-lg-3 PlaceOrder">
+        
+        <table class="table table-filter">
+            <caption><h1><i>Your Cart</i></h1></caption>
+            <tr class="jumbotron">
+                <th>Food Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>TotalPrice</th>
+            </tr>
+            <tr ng-repeat="food in foods">
+                <td>{{food.FoodName}}</td>
+                <td>{{food.Price}}</td>
+                <td>
+
+                    <button type="button" class="btn btn-primary btn-xs" ng-click="AddOne(food)">+</button>
+                    {{food.TotalQuantity}}
+                    <button type="button" class="btn btn-danger btn-xs" id="togglee{{food.MenuId}}" ng-click="RemoveOne(food)">-</button>
+
+
+                </td>
+                <td>{{food.TotalQuantity * food.Price}}</td>
+                <td>
+                    @*<button type="button" class="btn btn-primary btn-xs" ng-click="RemoveOrder(food)">-</button>*@
+
+                    <!-- Trigger the modal with a button -->
+                    <button type="button" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#myOrderModal{{food.MenuId}}">-</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myOrderModal{{food.MenuId}}" role="dialog">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">Remove</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p><b>You want to remove {{ food.FoodName }} from cart!</b></p>
+                                    <p>Are you sure?</p>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" ng-click="RemoveOrder(food)" data-dismiss="modal">Yes</button>
+
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <td><b>SubTotal: &nbsp;</b><span class="amount"></span></td>
+            </tr>
+            <tr>
+
+                <td><input type="button" class="btn btn-success btn" ng-click="PlaceOrder()" value="Place Order" /></td>
+
+                <td><input type="button" class="btn-warning btn" ng-click="CancelOrder()" value="Cancel" /></td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+
+
+<script>
+
+    myApp.controller('MenuListController', function MenuListController($scope, $http, $location, $window) {
+
+        var AmountValue = localStorage.getItem('amount');
+        if (AmountValue == null || AmountValue == 0) {
+            $(".PlaceOrder").css("display","none");
+        }
+
+        var EID = $location.absUrl().split("/")[5] || "Unknown";
+        console.log(EID);
+        $scope.PlaceOrder =function()
+        {
+            $window.location = "/home/PlaceOrder/" + EID;
+        }
+        $scope.firstCall = function () {
+
+            $http({
+                url: "http://localhost:89/api/ListMenuItem",
+                method: "POST",
+                dataType: JSON,
+                data: $.param({ "EID": EID }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).success(function (response) {
+                //console.log(response);
+                $scope.categories = response.Body.categoryList;
+
+            });
+
+           
+
+            var AmountValue = localStorage.getItem('amount');
+            if (AmountValue != null || AmountValue != 0) {
+                $(".PlaceOrder").css("display", "block");
+            }
+
+            var AmountValue = localStorage.getItem('amount');
+            if (AmountValue == null || AmountValue == 0) {
+                $(".PlaceOrder").css("display", "none");
+            }
+
+            $scope.foods = JSON.parse(localStorage.getItem('session'));
+            $scope.amounts = localStorage.getItem('amount');
+            $(".amount").html($scope.amounts);
+
+            document.body.style.overflow = "scroll";
+            
+        }
+
+        $scope.AddOrder = function (menu) {
+            if (menu.TotalQuantity > 0) {
+                var a = [];
+                var total = 0;
+
+                total = parseInt(localStorage.getItem('amount'));
+                //console.log(total);
+                if (total > 0) {
+                    total = total + menu.Price * menu.TotalQuantity;
+
+                    localStorage.setItem('amount', total);
+                }
+                else {
+                    total = menu.Price * menu.TotalQuantity;
+                    localStorage.setItem('amount', total);
+                }
+
+                a = JSON.parse(localStorage.getItem('session'));
+               
+                if (a == null) {
+                    var b = [];
+                    b.push(menu)
+                    localStorage.setItem('session', JSON.stringify(b));
+                    
+                }
+                else {
+
+                
+                
+                    for (var i=0; i < a.length; i++) {
+                        if (a[i].MenuId === menu.MenuId) {
+                            menu.TotalQuantity += a[i].TotalQuantity;
+                            a.splice(i,1);
+                        }
+                        
+                    }
+                    a.push(menu);
+
+                    localStorage.setItem('session', JSON.stringify(a));
+
+                }
+
+                $scope.firstCall();
+                //location.reload();
+            } else {
+                alert("Quantity can not be Zero or less than Zero");
+            }
+        }
+
+
+
+        //$scope.SecondCall = function () {
+        //    debugger;
+        //    $scope.foods = JSON.parse(localStorage.getItem('session'));
+        //    $scope.amounts = localStorage.getItem('amount');
+        //    $(".amount").html($scope.amounts);
+        //    debugger;
+
+        //    try {
+        //        $scope.$apply();
+
+        //    } catch (e) {
+
+        //    }
+
+        //}
+
+        $scope.CancelOrder = function () {
+            localStorage.setItem('session', null);
+            localStorage.setItem('amount', "0");
+            $scope.firstCall();
+            //location.reload();
+        }
+
+        $scope.RemoveOrder = function (food) {
+
+            a = JSON.parse(localStorage.getItem('session'));
+
+            for (var i = 0; i < a.length; i++) {
+                
+                if (a[i].MenuId === food.MenuId) {
+                    a.splice(i, 1);
+                }
+
+            }
+
+            localStorage.setItem('session', JSON.stringify(a));
+
+            totalrd = parseInt(localStorage.getItem('amount'));
+
+            totalrd -= food.Price * food.TotalQuantity;
+            localStorage.setItem('amount', totalrd);
+
+            $scope.firstCall();
+            //location.reload();
+
+        }
+
+        $scope.AddOne = function (food) {
+
+
+            a = JSON.parse(localStorage.getItem('session'));
+
+            totaladd = parseInt(localStorage.getItem('amount'));
+
+            var x = a.length;
+
+            for (var i = 0; i < x; i++) {
+                
+                if (a[i].MenuId == food.MenuId) {
+                    a[i].TotalQuantity = a[i].TotalQuantity + 1;
+                    //food.TotalQuantity = a[i].TotalQuantity + 1;
+                    console.log(food);
+                    //a.splice(i, 1);
+                    break;
+
+                }
+            }
+
+            //a.push(food);
+
+
+            totaladd += food.Price;
+
+            localStorage.setItem('session', JSON.stringify(a));
+
+            localStorage.setItem('amount', totaladd);
+
+            $scope.firstCall();
+            //location.reload();
+
+        }
+        $scope.RemoveOne = function (food) {
+
+
+            //debugger;
+            ////if (food.TotalQuantity == 1) {
+            ////    //$('#togglee').style.visibility = 'hidden';
+            ////    //$('#togglee').css('display', 'none');
+            ////    //$('#togglee').prop('disabled', true);
+
+            ////}
+
+            a = JSON.parse(localStorage.getItem('session'));
+
+            totalrem = parseInt(localStorage.getItem('amount'));
+
+            for (var i = 0; i < a.length; i++) {
+                debugger;
+                if (a[i].MenuId == food.MenuId) {
+                  
+                    a[i].TotalQuantity = a[i].TotalQuantity - 1;
+
+
+                    if (food.TotalQuantity == 1)
+                    {
+                        $scope.RemoveOrder(food);
+                    }
+                    
+                    break;
+                }
+
+            }
+
+           
+            
+            totalrem = totalrem - food.Price;
+
+            localStorage.setItem('session', JSON.stringify(a));
+
+            localStorage.setItem('amount', totalrem);
+            
+            $scope.firstCall();
+            //location.reload();
+
+        }
+
+        $scope.filterValue = function ($event) {
+            if (isNaN(String.fromCharCode($event.keyCode))) {
+                $event.preventDefault();
+            }
+        };
+
+
+    });
+
+</script>
+

@@ -1,0 +1,57 @@
+﻿<script>
+    myApp.controller('SellerController', function ($scope, $http) {
+        $scope.firstCall = function () {
+
+            $http({
+                url: "http://localhost:89/api/SellerList",
+                dataType: 'json',
+                method: 'GET',
+                data: '',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            }).success(function (response) {
+                $scope.establishments = response.Body;
+                
+                $scope.totalItems = $scope.establishments.length;
+                $scope.currentPage = 1;
+                $scope.numPerPage = 10;
+                $scope.paginate = function (value) {
+                    var begin, end, index;
+                    begin = ($scope.currentPage - 1) * $scope.numPerPage;
+                    end = begin + $scope.numPerPage;
+                    index = $scope.establishments.indexOf(value);
+                    return (begin <= index && index < end);
+                };
+            });
+
+        };
+
+    });
+</script>
+
+<div class="container-fluid">
+    <div ng-controller="SellerController" ng-init="firstCall()">
+
+        <table border="1" class="table table-striped table-hover table-bordered">
+            <tr>
+                <th>Restaurant Name</th>
+                <th>Phone Number</th>
+                <th>Street</th>
+                <th>Pincode</th>
+            </tr>
+            <tr ng-repeat="establishment in establishments | filter : paginate">
+                <td><a ng-href="~/Home/Menu/{{establishment.Id}}">{{ establishment.EstablishmentName }}</a></td>
+                <td>{{ establishment.Phone }}</td>
+                <td>{{ establishment.Street }}</td>
+                <td>{{ establishment.Pincode }}</td>
+            </tr>
+        </table>
+        <pagination total-items="totalItems" ng-model="currentPage"
+                    max-size="5" boundary-links="true"
+                    items-per-page="numPerPage" class="pagination-sm">
+        </pagination>
+    </div>
+</div>
+
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">

@@ -1,0 +1,66 @@
+﻿
+
+
+<script>
+    // create angular controller
+    myApp.controller('LoginController', function ($scope, $http, $window) {
+        localStorage.setItem('session', null);
+        localStorage.setItem('amount', "0");
+        // function to submit the form after all validation has occurred
+        $scope.submitForm = function () {
+
+            // check to make sure the form is completely valid
+            if ($scope.userForm.$valid) {
+                $http({
+                    url: "http://localhost:89/api/Login",
+                    method: "POST",
+                    dataType: JSON,
+                    data: $.param({ "Email": $scope.user.email, "Password": $scope.user.password }),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                }).success(function (data) {
+                    console.log(data);
+                    if (data.Status == 400) {
+                        alert(data.StatusMessage);
+                    }
+                    if (data.Status == 200) {
+                        localStorage.setItem('ESID', data.Body.EID);
+                        localStorage.setItem('EsName', data.Body.ESName);
+                        $window.location = "/home/EstablishmentMenuItems";
+
+                    }
+
+                });
+
+            }
+        };
+    });
+</script>
+
+<fieldset>
+    <legend>Login</legend>
+
+    <div ng-controller="LoginController">
+        <form name="userForm" ng-submit="submitForm()" novalidate>
+
+            <!-- EMAIL -->
+            <div class="form-group" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
+                <label>Email</label>
+                <input type="email" name="email" class="form-control" ng-model="user.email">
+                <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Enter a valid email.</p>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" ng-model="user.password" required>
+                <p ng-show="userForm.password.$invalid && !userForm.password.$pristine" class="help-block">You password is required.</p>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary" ng-disabled="userForm.$invalid">Submit</button>
+
+        </form>
+    </div>
+</fieldset>
+
+

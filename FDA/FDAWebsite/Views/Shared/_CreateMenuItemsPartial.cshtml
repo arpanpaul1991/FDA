@@ -1,0 +1,100 @@
+﻿<div class="row">
+    <script>
+        var myApp = angular.module('myApp', []);
+        // create angular controller
+        myApp.controller('registrationController', function ($scope, $http) {
+            // function to submit the form after all validation has occurred
+            $scope.firstCall = function () {
+
+                $http({
+                    url: "http://localhost:89/api/Category",
+                    dataType: 'json',
+                    method: 'GET',
+                    data: '',
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                }).success(function (response) {
+                    $scope.establishments = response.Body;
+                    debugger;
+                    console.log(response);
+                });
+
+            }
+            $scope.submitForm = function () {
+                $http({
+                    url: "http://localhost:89/api/CreateMenuItem",
+                    method: "POST",
+                    dataType: JSON,
+                    data: $.param({
+                        "EID": $scope.user.eid, "FoodName": $scope.user.fName, "Price": $scope.user.price, "Quantity": $scope.user.quantity,
+                        "CategoryId": $scope.user.category
+                    }),
+
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                }).success(function (response) {
+                    console.log(response);
+                });
+            };
+            
+
+        });
+    </script>
+
+
+        <legend>MenuList</legend>
+
+        <div ng-app="myApp" ng-controller="registrationController" ng-init="firstCall()">
+            <form name="userForm" ng-submit="submitForm()" novalidate>
+
+                <!-- EstablishmentID-->
+                <div class="form-group" ng-class="{ 'has-error' : userForm.name.$invalid && !userForm.name.$pristine }">
+                    <label>EstablishmenID</label>
+                    <input type="text" name="eid" class="form-control" ng-model="user.eid">
+                    @*<p ng-show="userForm.eid.$invalid && !userForm.name.$pristine" class="help-block"></p>*@
+                </div>
+
+                <!-- FoodName-->
+                <div class="form-group" ng-class="{ 'has-error' : userForm.name.$invalid && !userForm.name.$pristine }">
+                    <label>FoodName</label>
+                    <input type="text" name="fName" class="form-control" ng-model="user.fName">
+                    @*<p ng-show="userForm.fName.$invalid && !userForm.oname.$pristine" class="help-block"></p>*@
+                </div>
+
+                <!-- Price-->
+                <div class="form-group">
+                    <label>Price</label>
+                    <input type="text" name="price" class="form-control" ng-model="user.price">
+                    @*<p ng-show="userForm.price.$error.required" class="error"></p>*@
+                </div>
+
+                <!-- Quantity-->
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="text" name="quantity" class="form-control" ng-model="user.quantity">
+                    @*<p ng-show="myForm.quantity.$error.required" class="error"></p>*@
+                </div>
+
+
+                <!-- CategoryId-->
+                <div class="form-group">
+                    <label>Category</label>
+
+                    <select ng-model="user.category" class="dropdown form-control" required>
+
+                        <option ng-repeat="establishment in establishments"
+                                value="{{establishment.Id}}">
+                            {{establishment.CategoryName}}
+                        </option>
+                    </select>
+
+                </div>
+                    
+
+                    <button type="submit" class="btn btn-primary" ng-disabled="userForm.$invalid">Submit</button>
+
+</form>
+        </div>
+
+
+</div>

@@ -1,0 +1,58 @@
+﻿
+
+<div>
+    <div ng-controller="MenuListController" ng-init="firstCall()">
+
+    
+            <div ng-repeat="category in categories">
+                <h2>{{ category.CategoryType }} </h2>
+
+                <table border="1">
+                    <tr>
+                        <th>Food Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                    </tr>
+                    <tr ng-repeat="menu in category.menuList">
+                        <td>{{ menu.FoodName }}</td>
+                        <td>{{ menu.Price | currency:"&#8377;" }}</td>
+                        <td>{{ menu.Quantity }}</td>
+                    </tr>
+                </table>
+            </div>
+        
+      
+    </div>
+</div>
+ 
+
+
+<script>
+
+    myApp.controller('MenuListController', function MenuListController($scope, $http) {
+        $scope.firstCall = function () {
+
+            $http({
+                url: "http://localhost:89/api/ListMenuItem",
+                method: "POST",
+                dataType: JSON,
+                data: $.param({ "EID": "1" }),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            }).success(function (response) {
+                console.log(response);
+                $scope.categories = response.Body.categoryList;
+
+                
+            });
+        }
+
+    });
+
+</script>
+
+
+
+
+
+
+

@@ -1,0 +1,33 @@
+﻿using FoodDeliveryApp.Models;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace FDA.Core.DBContext
+{
+    class DBContext : DbContext
+    {
+        public DBContext()
+            : base("FDA")
+        {
+        }
+
+
+        public DbSet<Admin> Admin { get; set; }
+        public DbSet<Customer> Customer { get; set; }
+        public DbSet<Establishment> Establishment { get; set; }
+        public DbSet<EstablishmentStatus> EstablishmentStatus { get; set; }
+        public DbSet<MenuList> MenuList { get; set; }
+        public DbSet<MenuStatus> MenuStatus { get; set; }
+        public DbSet<Order> Order { get; set; }
+        public DbSet<OrderStatus> OrderStatus { get; set; }
+        public DbSet<Permission> Permission { get; set; }
+        public DbSet<Rating> Rating { get; set; }
+
+    }
+
+     
+}

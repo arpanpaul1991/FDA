@@ -1,0 +1,153 @@
+﻿
+    <script>
+   
+    // create angular controller
+        myApp.controller('registrationController', function ($scope, $http, $window) {
+
+        // function to submit the form after all validation has occurred
+        $scope.submitForm = function () {
+            // check to make sure the form is completely valid
+            
+                $http({
+                    url: "http://localhost:89/api/Registration",
+                    method: "POST",
+                    dataType: JSON,
+                    data: $.param({
+                        "Email": $scope.user.email, "Password": $scope.user.password, "EstablishmentName": $scope.user.ename, "OwnerName": $scope.user.oname,
+                        "ContactName": $scope.user.cname, "Phone": $scope.user.phone, "CompleteAddress": $scope.user.caddress,
+                        "Pincode": $scope.user.pincode, "Street": $scope.user.pincode
+                    }),
+
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                }).success(function (response) {
+                    debugger;
+                    
+                    console.log(response);
+                    if (response.StatusMessage == "Success") {
+
+
+                        var EID = response.Body.EID;
+                        var ESName = response.Body.ESName;
+
+                        localStorage.setItem('ESID', EID);
+                        localStorage.setItem('EsName', ESName);
+                        $window.location = "/Home/EstablishmentMenuItems";
+                    }
+                    if (response.StatusMessage == "Failed") {
+                        alert("User Already Exist");
+                    }
+                    
+                });
+
+            
+        };
+
+        $scope.filterValue = function ($event) {
+            if (isNaN(String.fromCharCode($event.keyCode))) {
+                $event.preventDefault();
+            }
+        };
+
+    });
+    </script>
+
+        <fieldset>
+            <legend>Registration</legend>
+            
+            <div ng-app="myApp" ng-controller="registrationController">
+                <form name="userForm" ng-submit="submitForm()" novalidate>
+
+                    <!-- EstablishmentName-->
+                    <div class="form-group">
+                        <label>Establishment Name: *</label>
+                        <input type="text" name="ename" class="form-control" ng-model="user.ename" ng-required="true">
+
+                        <p ng-show="userForm.ename.$pristine" class="help-block">please enter your restaurant name</p>
+                    
+                    </div>
+
+                    <!-- Owner Name-->
+                    <div>
+                        <label>Owner Name: *</label>
+                        <input type="text" name="oname" class="form-control" ng-model="user.oname" ng-required="true">
+                        <p ng-show="userForm.oname.$invalid && !userForm.oname.$pristine" class="help-block"></p>
+
+                        <p ng-show="userForm.oname.$pristine" class="help-block">please enter owner name</p>
+                    </div>
+
+                    <!-- Contact Name-->
+                    <div class="form-group">
+                        <label>Contact Name:</label>
+                        <input type="text" name="cname" class="form-control" ng-model="user.cname">
+                        <p ng-show="userForm.cname.$pristine" class="help-block">Please enter contact person name</p>
+                    </div>
+
+                    <!-- Phone-->
+                    <div class="form-group">
+                        <label>Phone: *</label>
+                        <input type="number" ng-keypress="filterValue($event)" name=" phone" class="form-control" ng-model="user.phone" ng-maxlength="10" ng-minlength="10" ng-required="true">
+
+                        <p ng-show="userForm.phone.$pristine" class="help-block">please enter phone number</p>
+                        <p ng-show="userForm.phone.$error.minlength" class="error">phone number is too short</p>
+                        <p ng-show="userForm.phone.$error.maxlength" class="error">phone number is too long </p>
+                    </div>
+
+                    <!-- CompleteAddress-->
+                    <div class="form-group">
+                        <label>Complete Address: *</label>
+                        <input type="text" name="caddress" class="form-control" ng-model="user.caddress">
+
+                        <p ng-show="userForm.caddress.$pristine" class="help-block">please enter address</p>
+                    </div>
+
+                    <!-- Pincode-->
+                    <div class="form-group">
+                        <label>Pincode: *</label>
+                        <input type="number" ng-keypress="filterValue($event)" name="pincode" class="form-control" ng-model="user.pincode" ng-maxlength="6" ng-minlength="6" ng-required="true">
+
+                        <p ng-show="userForm.pincode.$pristine" class="help-block">please enter pincode</p>
+                        <p ng-show="userForm.pincode.$error.minlength" class="error">pincode is too short</p>
+                        <p ng-show="userForm.pincode.$error.maxlength" class="error">pincode is too long </p>
+                    </div>
+                    
+
+                    <!-- EMAIL -->
+                    <div class="form-group" ng-class="{ 'has-error' : userForm.email.$invalid && !userForm.email.$pristine }">
+                        <label>Email: *</label>
+                        <input type="email" name="email" class="form-control" ng-model="user.email">
+                        <p ng-show="userForm.email.$invalid && !userForm.email.$pristine" class="help-block">Enter a valid email.</p>
+                    </div>
+
+
+                    <!-- Password -->
+                    <div class="form-group" ng-class="{ 'has-error' : userForm.password.$invalid && !userForm.password.$pristine }">
+                        <label>Password: *</label>
+                        <input type="password" name="password" class="form-control" ng-model="user.password" ng-required="true">
+                        <p ng-show="userForm.password.$invalid && !userForm.password.$pristine" class="help-block">password is required.</p>
+                    </div>
+
+                    <!-- Confirm Password -->
+                    <div ng-class="{'has-error': userForm.confirmPassword.$invalid && !userForm.confirmPassword.$pristine}">
+                        <label>Confirm Password: *</label>
+                        <input type="password" name="password" class="form-control" ng-model="user.confirmPassword" ng-required="true">
+
+                        <p ng-show="user.password != user.confirmPassword" class="help-block">password mismatch</p>
+                    </div>
+
+                    <!-- Street-->
+                    <div class="form-group">
+                        <label>Street: *</label>
+                        <input type="text" name="street" class="form-control" ng-model="user.street" ng-required="true">
+
+                        <p ng-show="userForm.street.$pristine" class="help-block">please enter street</p>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" ng-disabled="userForm.$invalid">Submit</button>
+
+                </form>
+            </div>
+
+
+        </fieldset>
+
+

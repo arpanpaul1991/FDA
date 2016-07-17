@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4C71F170-D304-4826-A47C-641893297372}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>FDA.Logic</RootNamespace>
+    <AssemblyName>FDA.Logic</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NLog">
+      <HintPath>..\..\..\packages\NLog.4.3.5\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Logger.cs" />
+    <Compile Include="Common\MailHelper.cs" />
+    <Compile Include="Models\AddMenuItemRequest.cs" />
+    <Compile Include="Models\CancelOrderRequest.cs" />
+    <Compile Include="Models\CartAddItemRequest.cs" />
+    <Compile Include="Models\CartGuidRequest.cs" />
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\CategoryList.cs" />
+    <Compile Include="Models\ChangePassword.cs" />
+    <Compile Include="Models\CreateOrderRequest.cs" />
+    <Compile Include="Models\CustomerFeedbackResponse.cs" />
+    <Compile Include="Models\DeleteMenuItem.cs" />
+    <Compile Include="Models\EditMenuItem.cs" />
+    <Compile Include="Models\EsIdRequest.cs" />
+    <Compile Include="Models\EstablishmentList.cs" />
+    <Compile Include="Models\EstablishmentListResponse.cs" />
+    <Compile Include="Models\EstablishmentMenu.cs" />
+    <Compile Include="Models\EstablishmentPermission.cs" />
+    <Compile Include="Models\FeedbackResponse.cs" />
+    <Compile Include="Models\ForgotPasswordRequest.cs" />
+    <Compile Include="Models\LoginModel.cs" />
+    <Compile Include="Models\LoginResponse.cs" />
+    <Compile Include="Models\MenuItemCategory.cs" />
+    <Compile Include="Models\MenuList.cs" />
+    <Compile Include="Models\OrderDetail.cs" />
+    <Compile Include="Models\OrdesByEstablishment.cs" />
+    <Compile Include="Models\RegistrationModel.cs" />
+    <Compile Include="Models\SellerList.cs" />
+    <Compile Include="Models\ShowCartResponse.cs" />
+    <Compile Include="Models\ShowOrderDetailsResponse.cs" />
+    <Compile Include="Models\ShowOrderResponse.cs" />
+    <Compile Include="Models\StatusResponse.cs" />
+    <Compile Include="Models\UpdateOrderRequest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ApproveEstablishmentService.cs" />
+    <Compile Include="Services\CancelOrderService.cs" />
+    <Compile Include="Models\CartIdRequest.cs" />
+    <Compile Include="Services\CartService.cs" />
+    <Compile Include="Services\CategoryListService.cs" />
+    <Compile Include="Services\DeleteMenuItemService.cs" />
+    <Compile Include="Services\EstablishmentNameService.cs" />
+    <Compile Include="Services\MenuItemService.cs" />
+    <Compile Include="Services\CreateOrderService.cs" />
+    <Compile Include="Services\EstabslimentOrderService.cs" />
+    <Compile Include="Services\LoginService.cs" />
+    <Compile Include="Services\OrderFeedbackService.cs" />
+    <Compile Include="Services\RegistrationService.cs" />
+    <Compile Include="Services\SellerService.cs" />
+    <Compile Include="Services\UpdateOrderService.cs" />
+    <Compile Include="Services\UserService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FDA.Core\FDA.Core.csproj">
+      <Project>{69b59c89-e283-4397-9721-d14ab65c798d}</Project>
+      <Name>FDA.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NLog.config" />
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,61 @@
+﻿<div class="header">
+   @*<ul>
+       <li><a href="#Home">Home</a>|</li>
+       <li><a href="#Restaurants">Restaurants</a>|</li>
+       <li><a href="#About">About Us</a>|</li>
+       <li><a href="#Contact">Contact Us</a>|</li>
+       <li><a href="#Login">Login</a></li>
+   </ul>*@
+
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid" ng-app="myApp" ng-controller="LogoutController">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/Home">FDA</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/Home">Home</a></li>
+                <li><a href="/Home/Restaurants">Restaurants</a></li>
+                <li><a href="/ContactUs">Contact Us</a></li>
+                <li class="ManageRestaurantsClass"><a href="/Home/EstablishmentMenuItems">Manage Restaurant Menu</a></li>
+                <li class="ManageRestaurantsClass"><a href="/Home/Orders">Orders</a></li>
+                <li class="LoginClass" ng-click="Logout()"><a href="/Home">Logout</a></li>
+            </ul>
+                   
+        </div>
+    </nav>
+    <div class="EsNameClass" style="color: red; font-family: Calibri; font-size: 30px; font-weight: bold"></div> 
+</div>
+<br />
+
+<script>
+    // create angular controller
+    myApp.controller('LogoutController', function ($scope) {
+
+        
+        var ESID = localStorage.getItem('ESID');
+
+        var EsName = localStorage.getItem('EsName');
+
+        $(".EsNameClass").html(EsName + " Restaurant")
+
+        if (ESID == "null") {
+            $(".LoginClass").css("display", "none");
+            $(".EsNameClass").css("display", "none");
+            $(".ManageRestaurantsClass").css("display", "none");
+        } else {
+            $(".LoginClass").css("display", "block");
+            $(".EsNameClass").css("display", "block");
+            $(".ManageRestaurantsClass").css("display", "block");
+        }
+
+        $scope.Logout = function () {
+      
+            localStorage.setItem('ESID', null);
+            localStorage.setItem('EsName', null);
+
+            $(".LoginClass").css("display", "none");
+            $(".EsNameClass").css("display", "none");
+        }
+    });
+</script>
